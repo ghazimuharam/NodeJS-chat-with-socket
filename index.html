@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Belajar NodeJS</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+        <script src="/socket.io/socket.io.js"></script>
+    </head>
+
+    <body>
+        <div class="container">
+            <br>
+            <div class="jumbotron">
+                <h1 class="display-4">Kirim Pesan</h1>
+                <br>
+                <input id="nama" class="form-control" placeholder="Nama">
+                <br>
+                <textarea id="pesanKirim" class="form-control" placeholder="Tulis Pesan"></textarea>
+                <br>
+                <button id="kirim" class="btn btn-success">Kirim</button>
+            </div>
+            <br>
+            <div id="pesan">
+
+            </div>
+        </div>
+    </body>
+
+    <script>
+        var socket = io()
+        $(function () {
+            $("#kirim").click(function () {
+                var pesan = {nama: $("#nama").val(), pesan: $("#pesanKirim").val()}
+                postPesan(pesan)
+            })
+            getPesan()
+        });
+
+        socket.on('pesan', tambahPesan)
+        function tambahPesan(pesan) {
+            $("#pesan").append(`<h4> ${pesan.nama} </h4> <p> ${pesan.pesan}</p>`)
+        }
+
+        function getPesan() {
+            $.get('http://localhost:3000/pesan', function (data) {
+                data.forEach(tambahPesan)
+            })
+        }
+
+        function postPesan(pesan) {
+            $.post('http://localhost:3000/pesan', pesan)
+        }
+    </script>
+</html>
